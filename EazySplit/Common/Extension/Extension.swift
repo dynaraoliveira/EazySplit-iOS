@@ -29,3 +29,19 @@ extension UIButton {
         self.layer.cornerRadius = 5
     }
 }
+
+extension UITextField {
+    func validatedText(validationType: ValidatorType) throws -> String {
+        let validator = ValidatorFactory.validatorFor(type: validationType)
+        return try validator.validated(self.text!)
+    }
+    
+    func showMessage(_ text: String) {
+        layer.cornerRadius = 5.0
+        layer.masksToBounds = true
+        layer.borderColor = UIColor.red.cgColor
+        layer.borderWidth = 0.5
+        attributedPlaceholder = NSAttributedString(string: text, attributes: [NSAttributedString.Key.foregroundColor: UIColor.red])
+    }
+}
+
