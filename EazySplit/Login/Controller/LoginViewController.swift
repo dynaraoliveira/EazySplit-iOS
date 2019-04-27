@@ -18,14 +18,18 @@ class LoginViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        loginButton.loadCornerRadius()
-        loginFacebookButton.loadCornerRadius()
-        loginGoogleButton.loadCornerRadius()
+        setButtons()
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.navigationBar.isHidden = true
+    }
+    
+    private func setButtons() {
+        loginButton.loadCornerRadius()
+        loginFacebookButton.loadCornerRadius()
+        loginGoogleButton.loadCornerRadius()
     }
     
     @IBAction func loginClick(_ sender: Any) {

@@ -24,6 +24,8 @@ class RegisterViewController: UIViewController {
     @IBOutlet weak var passwordErrorLabel: UILabel!
     @IBOutlet weak var passwordConfirmTextField: UITextField!
     @IBOutlet weak var passwordConfirmErrorLabel: UILabel!
+    @IBOutlet weak var registerButton: UIButton!
+    @IBOutlet weak var scrollView: UIScrollView!
     
     var firebaseService: FirebaseService?
     
@@ -31,8 +33,9 @@ class RegisterViewController: UIViewController {
         super.viewDidLoad()
         cleanErrors()
         setDelegate()
-        
-        registerImageView.image = UIImage(named: "foto")
+        setRegisterImageView()
+        setRegisterButton()
+        addObserverKeyboard()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -58,6 +61,28 @@ class RegisterViewController: UIViewController {
     
     @IBAction func registerClick(_ sender: Any) {
         validate()
+    }
+    
+    private func setRegisterImageView() {
+        registerImageView.layer.cornerRadius = registerImageView.frame.height / 2.0
+        registerImageView.layer.masksToBounds = true
+        registerImageView.image = UIImage(named: "foto")
+    }
+    
+    private func setRegisterButton() {
+        registerButton.loadCornerRadius()
+    }
+    
+    private func addObserverKeyboard() {
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(keyboardWillShow),
+                                               name: UIResponder.keyboardWillShowNotification,
+                                               object: nil)
+        
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(keyboardWillHide),
+                                               name: UIResponder.keyboardWillHideNotification,
+                                               object: nil)
     }
     
     private func validate() {
@@ -88,7 +113,11 @@ class RegisterViewController: UIViewController {
             case .success:
                 Loader.shared.hideOverlayView()
                 
-                print("success")
+                let storyBoard = UIStoryboard(name: "Main", bundle: nil)
+                guard let vc = storyBoard
+                    .instantiateViewController(withIdentifier:"HomeTabBar") as? UITabBarController else { return }
+                self.navigationController?.pushViewController(vc, animated: true)
+                
                 break
                 
             case .error(let err):
@@ -99,7 +128,7 @@ class RegisterViewController: UIViewController {
                                     
     }
     
-    fileprivate func cleanErrors() {
+    private func cleanErrors() {
         nameErrorLabel.text = ""
         emailErrorLabel.text = ""
         phoneErrorLabel.text = ""
@@ -108,7 +137,7 @@ class RegisterViewController: UIViewController {
         passwordConfirmErrorLabel.text = ""
     }
     
-    fileprivate func setDelegate() {
+    private func setDelegate() {
         nameTextField.delegate = self
         emailTextField.delegate = self
         phoneTextField.delegate = self
@@ -116,11 +145,54 @@ class RegisterViewController: UIViewController {
         passwordTextField.delegate = self
         passwordConfirmTextField.delegate = self
     }
+    
+    @objc func keyboardWillShow(notification: NSNotification) {
+        if let userInfo = notification.userInfo {
+            var keyboardFrame: CGRect = (userInfo[UIResponder.keyboardFrameBeginUserInfoKey] as! NSValue).cgRectValue
+            keyboardFrame = self.view.convert(keyboardFrame, from: nil)
+            
+            var contentInset:UIEdgeInsets = self.scrollView.contentInset
+            contentInset.bottom = keyboardFrame.size.height
+            scrollView.contentInset = contentInset
+        }
+    }
+    
+    @objc func keyboardWillHide(notification: NSNotification) {
+        let contentInset:UIEdgeInsets = UIEdgeInsets.zero
+        scrollView.contentInset = contentInset
+    }
 }
 
 extension RegisterViewController: UITextFieldDelegate {
     func textFieldDidEndEditing(_ textField: UITextField) {
         cleanErrors()
+    }
+    
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        
+        guard let text = textField.text else { return false }
+        
+        switch textField.tag {
+        case 3:
+            if textField.text?.count ?? 0 < 15 {
+                textField.text = text.applyPatternOnNumbers(pattern: "+(##) ####-####", replacmentCharacter: "#")
+            } else {
+                textField.text = text.applyPatternOnNumbers(pattern: "+(##) #####-####", replacmentCharacter: "#")
+            }
+        case 4:
+            if textField.text?.count ?? 0 >= 10 { return false }
+            textField.text = text.applyPatternOnNumbers(pattern: "##/##/####", replacmentCharacter: "#")
+            
+        default:
+            return true
+        }
+        
+        return true
+    }
+    
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        return true
     }
 }
 

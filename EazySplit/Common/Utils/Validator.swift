@@ -120,7 +120,7 @@ struct PhoneValidator: ValidatorConvertible {
     func validated(_ value: String) throws -> String {
         let phone = NSPredicate(format: "SELF MATCHES %@", "^((\\+)|(00))[0-9]{6,14}$")
         
-        guard phone.evaluate(with: value) else {
+        guard phone.evaluate(with: value.removeCharsFromStringPhone) else {
             throw ValidationError("Invalid phone", errorLabel)
         }
         
