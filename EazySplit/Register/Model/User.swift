@@ -11,8 +11,8 @@ import Foundation
 struct User {
     var name: String
     var email: String
-    var phone: String
-    var birthday: String
+    var phoneNumber: String
+    var birthDate: Date
     var password: String
     var photoURL: String
 }

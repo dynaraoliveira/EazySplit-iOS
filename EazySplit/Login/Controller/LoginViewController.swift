@@ -33,10 +33,29 @@ class LoginViewController: UIViewController {
     }
     
     @IBAction func loginClick(_ sender: Any) {
-        let storyBoard = UIStoryboard(name: "Main", bundle: nil)
-        guard let vc = storyBoard
-            .instantiateViewController(withIdentifier:"HomeTabBar") as? UITabBarController else { return }
-        navigationController?.pushViewController(vc, animated: true)
+        Loader.shared.showOverlay(view: self.view)
+        
+        let firebaseService = FirebaseService()
+        firebaseService.loginFirebase(email: userTextField.text ?? "",
+                                      password: passwordTextField.text ?? "",
+                                      completion: { (result) in
+            switch result {
+            case .success:
+                Loader.shared.hideOverlayView()
+                
+                let storyBoard = UIStoryboard(name: "Main", bundle: nil)
+                guard let vc = storyBoard
+                    .instantiateViewController(withIdentifier:"HomeTabBar") as? UITabBarController else { return }
+                self.navigationController?.pushViewController(vc, animated: true)
+                
+                break
+                
+            case .error(let err):
+                print(err.localizedDescription)
+                break
+            }
+        })
+       
     }
     
 }

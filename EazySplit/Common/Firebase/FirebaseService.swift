@@ -9,6 +9,7 @@
 import Foundation
 import FirebaseAuth
 import FirebaseStorage
+import FirebaseFirestore
 
 enum Result {
     case success
@@ -23,6 +24,24 @@ class FirebaseService {
     
     init() {
         authFirebase = Auth.auth()
+    }
+    
+    func loginFirebase(email: String, password: String, completion: @escaping((Result) -> Void)) {
+        authFirebase.signIn(withEmail: email, password: password) { (authResult, error) in
+            guard let error = error else {
+                if let authUser = authResult?.user {
+                    self.authUser = authUser
+                }
+                return
+            }
+            self.error = error
+        }
+        
+        if let error = error {
+            completion(.error(error))
+        }
+        
+        completion(.success)
     }
     
     func saveFirebase(_ user: User, photoData: Data? = nil, completion: @escaping((Result) -> Void)) {
@@ -82,15 +101,30 @@ class FirebaseService {
         let changeResquest = authUser?.createProfileChangeRequest()
         changeResquest?.displayName = user?.name
         changeResquest?.photoURL = URL(string: user?.photoURL ?? "")
-
         changeResquest?.commitChanges { (error) in
-            
             if error != nil {
                 print(error!)
             }
-            
-            
-            
+            self.performUserChangeOthersData()
+        }
+    }
+    
+    private func performUserChangeOthersData() {
+        let db = Firestore.firestore()
+        let uid = authUser?.uid ?? ""
+        let ref: DocumentReference = db.collection("users").document(uid)
+        
+        let docData: [String: Any] = [
+            "birthday": user?.birthDate ?? "",
+            "phone": user?.phoneNumber ?? ""
+        ]
+        
+        ref.setData(docData) { err in
+            if let err = err {
+                print("Error writing document: \(err)")
+            } else {
+                print("Document successfully written!")
+            }
         }
         
     }

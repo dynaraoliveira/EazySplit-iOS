@@ -44,7 +44,6 @@ class RegisterViewController: UIViewController {
     }
     
     @IBAction func changePhotoClick(_ sender: Any) {
-        
         let alert = UIAlertController(title: "Choose Image", message: nil, preferredStyle: .actionSheet)
         alert.addAction(UIAlertAction(title: "Camera", style: .default, handler: { _ in
             self.openCamera()
@@ -89,12 +88,16 @@ class RegisterViewController: UIViewController {
         do {
             let name = try nameTextField.validatedText(validationType: .requiredField(field: "Name", label: nameErrorLabel))
             let email = try emailTextField.validatedText(validationType: ValidatorType.email(label: emailErrorLabel))
-            let phone = try phoneTextField.validatedText(validationType: ValidatorType.phone(label: phoneErrorLabel))
-            let birthday = try birthdayTextField.validatedText(validationType: ValidatorType.date(label: birthdayErrorLabel))
+            let phoneNumber = try phoneTextField.validatedText(validationType: ValidatorType.phone(label: phoneErrorLabel))
+            let birthDateString = try birthdayTextField.validatedText(validationType: ValidatorType.date(label: birthdayErrorLabel))
             let password = try passwordTextField.validatedText(validationType: ValidatorType.password(label: passwordErrorLabel, compare: nil))
             let _ = try passwordConfirmTextField.validatedText(validationType: ValidatorType.password(label: passwordConfirmErrorLabel, compare: password))
             
-            let user = User(name: name, email: email, phone: phone, birthday: birthday, password: password, photoURL: "")
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = "dd/MM/yyyy"
+            guard let birthDate = dateFormatter.date(from: birthDateString) else { return }
+            
+            let user = User(name: name, email: email, phoneNumber: phoneNumber, birthDate: birthDate, password: password, photoURL: "")
             
             saveFirebase(user)
             

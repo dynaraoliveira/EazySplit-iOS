@@ -102,7 +102,7 @@ struct DateValidator: ValidatorConvertible {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "dd/MM/yyyy"
         
-        guard (dateFormatter.date(from: value) != nil) else {
+        guard dateFormatter.date(from: value) != nil else {
             throw ValidationError("Invalid date", errorLabel)
         }
         
@@ -119,11 +119,11 @@ struct PhoneValidator: ValidatorConvertible {
     
     func validated(_ value: String) throws -> String {
         let phone = NSPredicate(format: "SELF MATCHES %@", "^((\\+)|(00))[0-9]{6,14}$")
-        
-        guard phone.evaluate(with: value.removeCharsFromStringPhone) else {
+        let valuePhone = value.removeCharsFromStringPhone
+        guard phone.evaluate(with: valuePhone) else {
             throw ValidationError("Invalid phone", errorLabel)
         }
         
-        return value
+        return valuePhone
     }
 }
