@@ -23,7 +23,7 @@ class RestaurantsViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        navigationController?.navigationBar.isHidden = false
+        loadNavigationBar()
     }
     
     func loadRestaurants() {
@@ -60,5 +60,35 @@ extension RestaurantsViewController: UITableViewDataSource, UITableViewDelegate 
         return cell
     }
     
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let restaurant = restaurants[indexPath.row]
+        
+    }
     
+}
+
+extension RestaurantsViewController {
+    private func loadNavigationBar() {
+        navigationController?.navigationBar.isHidden = false
+        
+        let size = navigationController?.navigationBar.frame.height ?? 0.0
+        
+        let btnProfile = UIButton(type: .custom)
+        
+        if let withURL = FirebaseService.shared.authUser?.photoURL,
+            let data = try? Data(contentsOf: withURL),
+            let image = UIImage(data: data) {
+            btnProfile.setImage(image.withRenderingMode(.alwaysOriginal), for: .normal)
+        } else {
+            btnProfile.setImage(UIImage (named: "foto")?.withRenderingMode(.alwaysOriginal), for: .normal)
+        }
+        
+        btnProfile.frame = CGRect(x: 0.0, y: 0.0, width: size, height: size)
+        btnProfile.widthAnchor.constraint(equalToConstant: size).isActive = true
+        btnProfile.heightAnchor.constraint(equalToConstant: size).isActive = true
+        btnProfile.layer.cornerRadius = size / 2
+        btnProfile.layer.masksToBounds = true
+        let btnProfileItem = UIBarButtonItem(customView: btnProfile)
+        self.navigationItem.rightBarButtonItems = [btnProfileItem]
+    }
 }

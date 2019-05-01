@@ -188,7 +188,7 @@
                                 <rect key="frame" x="0.0" y="56" width="414" height="669"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <prototypes>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="RestaurantTableViewCell" rowHeight="233" id="JEt-MT-srb" customClass="RestaurantTableViewCell" customModule="EazySplit" customModuleProvider="target">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="RestaurantTableViewCell" rowHeight="233" id="JEt-MT-srb" customClass="RestaurantTableViewCell" customModule="EazySplit" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="28" width="414" height="233"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="JEt-MT-srb" id="QZi-M6-Rzr">
@@ -259,7 +259,7 @@
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="u05-Kn-A9T"/>
                     </view>
-                    <navigationItem key="navigationItem" title="Home" id="nrA-CD-6Wn"/>
+                    <navigationItem key="navigationItem" title="EAZY÷SPLIT" id="nrA-CD-6Wn"/>
                     <connections>
                         <outlet property="restaurantsTableView" destination="Wb3-nI-4WW" id="B95-6O-Q3l"/>
                         <outlet property="searchDisplayController" destination="crD-My-Bzv" id="Cst-YT-bUF"/>
@@ -303,7 +303,7 @@
         <!--EAZY÷SPLIT-->
         <scene sceneID="faT-ht-Q3c">
             <objects>
-                <viewController title="EAZY÷SPLIT" id="WuB-BF-Rw8" customClass="RegisterViewController" customModule="EazySplit" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="RegisterViewController" title="EAZY÷SPLIT" id="WuB-BF-Rw8" customClass="RegisterViewController" customModule="EazySplit" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="xl2-OU-CWl">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="808"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -603,34 +603,137 @@
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="PFb-m4-FLQ">
                                 <rect key="frame" x="0.0" y="0.0" width="414" height="151"/>
+                                <subviews>
+                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="foto" translatesAutoresizingMaskIntoConstraints="NO" id="TST-r8-aNV">
+                                        <rect key="frame" x="279" y="16" width="119" height="119"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" secondItem="TST-r8-aNV" secondAttribute="height" multiplier="1:1" id="FxA-ZN-tWv"/>
+                                        </constraints>
+                                    </imageView>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Nome do cliente" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="GIU-Ia-mRV">
+                                        <rect key="frame" x="24" y="105" width="175" height="30"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="25"/>
+                                        <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="JV9-30-T4k">
+                                        <rect key="frame" x="207" y="103" width="32" height="32"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="32" id="D10-C3-rZ9"/>
+                                            <constraint firstAttribute="height" constant="32" id="TEg-Qp-xKY"/>
+                                        </constraints>
+                                        <state key="normal" title=" " image="pencil"/>
+                                        <connections>
+                                            <action selector="editProfile:" destination="axP-nI-Rdc" eventType="touchUpInside" id="18V-nj-GRu"/>
+                                        </connections>
+                                    </button>
+                                </subviews>
                                 <color key="backgroundColor" red="0.81960784310000001" green="0.23529411759999999" blue="0.2470588235" alpha="1" colorSpace="calibratedRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="trailing" secondItem="TST-r8-aNV" secondAttribute="trailing" constant="16" id="8Gk-0Q-bze"/>
+                                    <constraint firstItem="TST-r8-aNV" firstAttribute="centerY" secondItem="PFb-m4-FLQ" secondAttribute="centerY" id="BjX-Ae-ImO"/>
+                                    <constraint firstItem="JV9-30-T4k" firstAttribute="leading" secondItem="GIU-Ia-mRV" secondAttribute="trailing" constant="8" id="C08-Lo-LQ7"/>
+                                    <constraint firstItem="TST-r8-aNV" firstAttribute="bottom" secondItem="GIU-Ia-mRV" secondAttribute="bottom" id="Wsg-QP-xLj"/>
+                                    <constraint firstItem="JV9-30-T4k" firstAttribute="bottom" secondItem="GIU-Ia-mRV" secondAttribute="bottom" id="Z4r-O3-nB7"/>
+                                    <constraint firstItem="GIU-Ia-mRV" firstAttribute="leading" secondItem="PFb-m4-FLQ" secondAttribute="leading" constant="24" id="gCc-Fl-AzC"/>
+                                    <constraint firstItem="TST-r8-aNV" firstAttribute="top" secondItem="PFb-m4-FLQ" secondAttribute="topMargin" constant="8" id="khy-7x-3Jz"/>
+                                </constraints>
                             </view>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Wwo-7I-4KY">
-                                <rect key="frame" x="184" y="378" width="46" height="30"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <state key="normal" title="Button"/>
+                            <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="left" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="9Vj-8w-qLF">
+                                <rect key="frame" x="0.0" y="151" width="414" height="80"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="80" id="zeC-fK-kMH"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" weight="medium" pointSize="22"/>
+                                <inset key="titleEdgeInsets" minX="64" minY="0.0" maxX="0.0" maxY="0.0"/>
+                                <inset key="imageEdgeInsets" minX="32" minY="0.0" maxX="40" maxY="0.0"/>
+                                <state key="normal" title="Forma de pagamento" image="cartao">
+                                    <color key="titleColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                </state>
                                 <connections>
-                                    <action selector="logout:" destination="axP-nI-Rdc" eventType="touchUpInside" id="fqI-wK-zfo"/>
+                                    <action selector="clickMeansOfPayment:" destination="axP-nI-Rdc" eventType="touchUpInside" id="8fZ-XV-qn4"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="left" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="L67-Rv-zty">
+                                <rect key="frame" x="0.0" y="232" width="414" height="80"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="80" id="tiS-0L-d9f"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" weight="medium" pointSize="22"/>
+                                <inset key="titleEdgeInsets" minX="64" minY="0.0" maxX="0.0" maxY="0.0"/>
+                                <inset key="imageEdgeInsets" minX="32" minY="0.0" maxX="40" maxY="0.0"/>
+                                <state key="normal" title="Idioma" image="earth">
+                                    <color key="titleColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                </state>
+                                <connections>
+                                    <action selector="clickLanguage:" destination="axP-nI-Rdc" eventType="touchUpInside" id="CLg-ve-HRk"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="left" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="4TN-uy-ZAn">
+                                <rect key="frame" x="0.0" y="313" width="414" height="80"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="80" id="pds-D4-ZTL"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" weight="medium" pointSize="22"/>
+                                <inset key="titleEdgeInsets" minX="64" minY="0.0" maxX="0.0" maxY="0.0"/>
+                                <inset key="imageEdgeInsets" minX="32" minY="0.0" maxX="40" maxY="0.0"/>
+                                <state key="normal" title="Sobre o app" image="information">
+                                    <color key="titleColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                </state>
+                                <connections>
+                                    <action selector="clickAbout:" destination="axP-nI-Rdc" eventType="touchUpInside" id="T9q-jh-ocY"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="left" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="mOW-AL-PZL">
+                                <rect key="frame" x="0.0" y="394" width="414" height="80"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="80" id="qd2-oz-P7F"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" weight="medium" pointSize="22"/>
+                                <inset key="titleEdgeInsets" minX="64" minY="0.0" maxX="0.0" maxY="0.0"/>
+                                <inset key="imageEdgeInsets" minX="32" minY="0.0" maxX="40" maxY="0.0"/>
+                                <state key="normal" title="Sair" image="power">
+                                    <color key="titleColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                </state>
+                                <connections>
+                                    <action selector="clickLogout:" destination="axP-nI-Rdc" eventType="touchUpInside" id="aaO-fU-24b"/>
                                 </connections>
                             </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
+                            <constraint firstItem="L67-Rv-zty" firstAttribute="leading" secondItem="LIm-bx-6DN" secondAttribute="leading" id="1Dl-HI-Mwe"/>
+                            <constraint firstItem="L67-Rv-zty" firstAttribute="top" secondItem="9Vj-8w-qLF" secondAttribute="bottom" constant="1" id="51O-an-hMS"/>
+                            <constraint firstItem="9Vj-8w-qLF" firstAttribute="leading" secondItem="LIm-bx-6DN" secondAttribute="leading" id="EbI-HY-6mJ"/>
                             <constraint firstItem="PFb-m4-FLQ" firstAttribute="height" secondItem="xjp-4L-4sB" secondAttribute="height" multiplier="0.2" id="J7g-Xw-qtx"/>
+                            <constraint firstItem="mOW-AL-PZL" firstAttribute="leading" secondItem="LIm-bx-6DN" secondAttribute="leading" id="N6B-Tn-STi"/>
                             <constraint firstItem="PFb-m4-FLQ" firstAttribute="leading" secondItem="LIm-bx-6DN" secondAttribute="leading" id="Rzo-lC-bzQ"/>
+                            <constraint firstItem="4TN-uy-ZAn" firstAttribute="trailing" secondItem="LIm-bx-6DN" secondAttribute="trailing" id="TUm-81-dLt"/>
+                            <constraint firstItem="mOW-AL-PZL" firstAttribute="trailing" secondItem="LIm-bx-6DN" secondAttribute="trailing" id="UGX-aZ-qqw"/>
+                            <constraint firstItem="4TN-uy-ZAn" firstAttribute="top" secondItem="L67-Rv-zty" secondAttribute="bottom" constant="1" id="VGl-JC-RMk"/>
+                            <constraint firstItem="4TN-uy-ZAn" firstAttribute="leading" secondItem="LIm-bx-6DN" secondAttribute="leading" id="WaX-1k-GMs"/>
+                            <constraint firstItem="mOW-AL-PZL" firstAttribute="top" secondItem="4TN-uy-ZAn" secondAttribute="bottom" constant="1" id="db6-55-Vr9"/>
                             <constraint firstItem="PFb-m4-FLQ" firstAttribute="trailing" secondItem="LIm-bx-6DN" secondAttribute="trailing" id="er9-4u-Yjh"/>
+                            <constraint firstItem="9Vj-8w-qLF" firstAttribute="trailing" secondItem="LIm-bx-6DN" secondAttribute="trailing" id="hi5-vh-xRe"/>
                             <constraint firstItem="PFb-m4-FLQ" firstAttribute="top" secondItem="LIm-bx-6DN" secondAttribute="top" id="nVh-Sc-H3O"/>
+                            <constraint firstItem="L67-Rv-zty" firstAttribute="trailing" secondItem="LIm-bx-6DN" secondAttribute="trailing" id="uyO-kk-U0y"/>
+                            <constraint firstItem="9Vj-8w-qLF" firstAttribute="top" secondItem="PFb-m4-FLQ" secondAttribute="bottom" id="z0L-LM-DC2"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="LIm-bx-6DN"/>
                     </view>
-                    <navigationItem key="navigationItem" largeTitleDisplayMode="always" id="aPe-T2-wqy"/>
+                    <navigationItem key="navigationItem" title="Setting" largeTitleDisplayMode="always" id="aPe-T2-wqy"/>
                     <connections>
-                        <outlet property="logout" destination="Wwo-7I-4KY" id="ehb-uH-nmU"/>
+                        <outlet property="about" destination="4TN-uy-ZAn" id="E3F-p9-3hI"/>
+                        <outlet property="imageProfile" destination="TST-r8-aNV" id="IXS-7Y-VLa"/>
+                        <outlet property="language" destination="L67-Rv-zty" id="ggk-wb-anC"/>
+                        <outlet property="logout" destination="mOW-AL-PZL" id="YIt-gf-gvQ"/>
+                        <outlet property="meansOfPayment" destination="9Vj-8w-qLF" id="xpx-CE-5ZT"/>
+                        <outlet property="nameProfile" destination="GIU-Ia-mRV" id="ogi-h2-2pH"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="WN2-zD-uQK" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1532" y="2135"/>
+            <point key="canvasLocation" x="1531.8840579710145" y="2134.8214285714284"/>
         </scene>
         <!--Tab Bar Controller-->
         <scene sceneID="JM8-K1-7Cw">
@@ -698,7 +801,13 @@
         </scene>
     </scenes>
     <resources>
+        <image name="cartao" width="24" height="24"/>
+        <image name="earth" width="24" height="24"/>
+        <image name="foto" width="320" height="320"/>
+        <image name="information" width="24" height="24"/>
         <image name="menu" width="32" height="32"/>
+        <image name="pencil" width="36" height="36"/>
+        <image name="power" width="24" height="24"/>
         <image name="setting" width="32" height="32"/>
     </resources>
 </document>

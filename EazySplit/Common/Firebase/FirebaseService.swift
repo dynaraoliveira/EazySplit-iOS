@@ -20,8 +20,7 @@ class FirebaseService {
     
     static let shared = FirebaseService()
     
-    private var user: User?
-    
+    var user: User?
     var restaurantList: [Restaurant] = []
     var authUser: FirebaseAuth.User?
     let authFirebase: Auth
@@ -69,7 +68,7 @@ class FirebaseService {
             }
         }
     }
-
+    
     func listRestaurants(completion: @escaping((Result) -> Void)) {
         firestoreListener = firestore.collection(collectionRestaurants)
             .order(by: "name", descending: false)
@@ -103,6 +102,39 @@ class FirebaseService {
                         }
                     }
                 }
+        }
+    }
+    
+    func getUser(completion: @escaping((Result) -> Void)) {
+        self.user = nil
+        
+        let uid = authUser?.uid ?? ""
+        
+        let name = authUser?.displayName ?? ""
+        let email = authUser?.email ?? ""
+        let photoURL = authUser?.photoURL?.absoluteString ?? ""
+        
+        let db = Firestore.firestore()
+        let ref: DocumentReference = db.collection("users").document(uid)
+        
+        ref.getDocument { (document, error) in
+            if let error = error {
+                completion(.error(error))
+                return
+            }
+            
+            let data = document?.data()
+            
+            if let phoneNumber = data?["phoneNumber"] as? String,
+                let birthDate = data?["birthDate"] as? Date {
+                self.user = User(name: name, email: email, phoneNumber: phoneNumber, birthDate: birthDate, password: "", photoURL: photoURL)
+                completion(.success)
+            }
+        }
+        
+        if user == nil {
+            self.user = User(name: name, email: email, phoneNumber: "", birthDate: Date(), password: "", photoURL: photoURL)
+            completion(.success)
         }
     }
     

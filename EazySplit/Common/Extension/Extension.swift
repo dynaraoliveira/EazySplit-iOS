@@ -22,6 +22,15 @@ extension UIImageView {
         }
     }
     
+    func loadImage(withURL: URL) {
+        DispatchQueue.global().async { [weak self] in
+            if let data = try? Data(contentsOf: withURL), let image = UIImage(data: data) {
+                DispatchQueue.main.async {
+                    self?.image = image
+                }
+            }
+        }
+    }
 }
 
 extension UIButton {

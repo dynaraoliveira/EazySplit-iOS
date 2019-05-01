@@ -20,6 +20,8 @@ class LoginViewController: UIViewController {
     var firebaseService: FirebaseService?
     
     override func viewDidLoad() {
+        userTextField.text = "teste@eazysplit.com"
+        passwordTextField.text = "123456"
         super.viewDidLoad()
         setButtons()
         if FirebaseService.shared.authUser != nil {

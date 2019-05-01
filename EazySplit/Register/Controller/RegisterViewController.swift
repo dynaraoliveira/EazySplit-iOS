@@ -27,8 +27,26 @@ class RegisterViewController: UIViewController {
     @IBOutlet weak var registerButton: UIButton!
     @IBOutlet weak var scrollView: UIScrollView!
     
+    private var update: Bool = false
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        if FirebaseService.shared.authUser != nil {
+            FirebaseService.shared.getUser { (result) in
+                switch result {
+                case .success:
+                    if let user = FirebaseService.shared.user {
+                        self.loadUserData(user)
+                        self.update = true
+                    }
+                case .error(let error):
+                    print(error.localizedDescription)
+                    break
+                }
+            }
+        }
+        
         cleanErrors()
         setDelegate()
         setRegisterImageView()
@@ -39,21 +57,11 @@ class RegisterViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.navigationBar.isHidden = false
+        navigationController?.navigationBar.prefersLargeTitles = false
     }
     
     @IBAction func changePhotoClick(_ sender: Any) {
-        let alert = UIAlertController(title: "Choose Image", message: nil, preferredStyle: .actionSheet)
-        alert.addAction(UIAlertAction(title: "Camera", style: .default, handler: { _ in
-            self.openCamera()
-        }))
-        
-        alert.addAction(UIAlertAction(title: "Gallery", style: .default, handler: { _ in
-            self.openGallery()
-        }))
-        
-        alert.addAction(UIAlertAction.init(title: "Cancel", style: .cancel, handler: nil))
-        
-        self.present(alert, animated: true, completion: nil)
+        showActionSheet()
     }
     
     @IBAction func registerClick(_ sender: Any) {
@@ -88,9 +96,12 @@ class RegisterViewController: UIViewController {
             let email = try emailTextField.validatedText(validationType: ValidatorType.email(label: emailErrorLabel))
             let phoneNumber = try phoneTextField.validatedText(validationType: ValidatorType.phone(label: phoneErrorLabel))
             let birthDateString = try birthdayTextField.validatedText(validationType: ValidatorType.date(label: birthdayErrorLabel))
-            let password = try passwordTextField.validatedText(validationType: ValidatorType.password(label: passwordErrorLabel, compare: nil))
-            let _ = try passwordConfirmTextField.validatedText(validationType: ValidatorType.password(label: passwordConfirmErrorLabel, compare: password))
             
+            var password = ""
+            if !update {
+                password = try passwordTextField.validatedText(validationType: ValidatorType.password(label: passwordErrorLabel, compare: nil))
+                let _ = try passwordConfirmTextField.validatedText(validationType: ValidatorType.password(label: passwordConfirmErrorLabel, compare: password))
+            }
             let dateFormatter = DateFormatter()
             dateFormatter.dateFormat = "dd/MM/yyyy"
             guard let birthDate = dateFormatter.date(from: birthDateString) else { return }
@@ -125,10 +136,24 @@ class RegisterViewController: UIViewController {
                 break
             }
         })
-                                    
+        
     }
     
-    private func cleanErrors() {
+    private func loadUserData(_ user: User) {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "dd/MM/yyyy"
+        
+        nameTextField.text = user.name
+        emailTextField.text = user.email
+        phoneTextField.text = user.phoneNumber
+        birthdayTextField.text = dateFormatter.string(from: user.birthDate)
+        passwordTextField.isHidden = true
+        passwordConfirmTextField.isHidden = true
+        passwordErrorLabel.isHidden = true
+        passwordConfirmErrorLabel.isHidden = true
+    }
+    
+    func cleanErrors() {
         nameErrorLabel.text = ""
         emailErrorLabel.text = ""
         phoneErrorLabel.text = ""
@@ -144,6 +169,21 @@ class RegisterViewController: UIViewController {
         birthdayTextField.delegate = self
         passwordTextField.delegate = self
         passwordConfirmTextField.delegate = self
+    }
+    
+    private func showActionSheet() {
+        let alert = UIAlertController(title: "Choose Image", message: nil, preferredStyle: .actionSheet)
+        alert.addAction(UIAlertAction(title: "Camera", style: .default, handler: { _ in
+            self.openCamera()
+        }))
+        
+        alert.addAction(UIAlertAction(title: "Gallery", style: .default, handler: { _ in
+            self.openGallery()
+        }))
+        
+        alert.addAction(UIAlertAction.init(title: "Cancel", style: .cancel, handler: nil))
+        
+        self.present(alert, animated: true, completion: nil)
     }
     
     @objc func keyboardWillShow(notification: NSNotification) {
@@ -249,7 +289,7 @@ extension RegisterViewController: UIImagePickerControllerDelegate, UINavigationC
         print("canceled picker")
         dismiss(animated: true, completion: nil)
     }
-
+    
 }
 
 fileprivate func convertFromUIImagePickerControllerInfoKeyDictionary(_ input: [UIImagePickerController.InfoKey: Any]) -> [String: Any] {
