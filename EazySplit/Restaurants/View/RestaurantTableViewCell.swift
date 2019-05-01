@@ -35,7 +35,7 @@ class RestaurantTableViewCell: UITableViewCell {
     }
 
     func setupRestaurant(_ restaurant: Restaurant) {
-        restaurantImageView.loadImage(withURL: restaurant.image)
+        restaurantImageView.loadImage(withURL: restaurant.urlImage)
         typeFoodLabel.text = restaurant.type
         nameRestaurantLabel.text = restaurant.name
     }

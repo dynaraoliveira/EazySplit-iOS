@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		066A8690B74486AD75EB135C /* Pods_EazySplit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F9155AAFA1653BF9DA0189CD /* Pods_EazySplit.framework */; };
+		A55E5089227912E90099CB41 /* SettingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A55E5088227912E90099CB41 /* SettingViewController.swift */; };
 		A5A03B8B226CF8DE00A0622C /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5A03B8A226CF8DE00A0622C /* AppDelegate.swift */; };
 		A5A03B8D226CF8DE00A0622C /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5A03B8C226CF8DE00A0622C /* LoginViewController.swift */; };
 		A5A03B90226CF8DE00A0622C /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A5A03B8E226CF8DE00A0622C /* Main.storyboard */; };
@@ -28,6 +29,7 @@
 /* Begin PBXFileReference section */
 		32F44C76815487553649CCEC /* Pods-EazySplit.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-EazySplit.debug.xcconfig"; path = "Target Support Files/Pods-EazySplit/Pods-EazySplit.debug.xcconfig"; sourceTree = "<group>"; };
 		6091642A7524DF291746D055 /* Pods-EazySplit.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-EazySplit.release.xcconfig"; path = "Target Support Files/Pods-EazySplit/Pods-EazySplit.release.xcconfig"; sourceTree = "<group>"; };
+		A55E5088227912E90099CB41 /* SettingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingViewController.swift; sourceTree = "<group>"; };
 		A5A03B87226CF8DE00A0622C /* EazySplit.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = EazySplit.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A5A03B8A226CF8DE00A0622C /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		A5A03B8C226CF8DE00A0622C /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
@@ -60,6 +62,22 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		A55E5086227912BE0099CB41 /* Setting */ = {
+			isa = PBXGroup;
+			children = (
+				A55E5087227912D40099CB41 /* Controller */,
+			);
+			path = Setting;
+			sourceTree = "<group>";
+		};
+		A55E5087227912D40099CB41 /* Controller */ = {
+			isa = PBXGroup;
+			children = (
+				A55E5088227912E90099CB41 /* SettingViewController.swift */,
+			);
+			path = Controller;
+			sourceTree = "<group>";
+		};
 		A5A03B7E226CF8DE00A0622C = {
 			isa = PBXGroup;
 			children = (
@@ -81,6 +99,7 @@
 		A5A03B89226CF8DE00A0622C /* EazySplit */ = {
 			isa = PBXGroup;
 			children = (
+				A55E5086227912BE0099CB41 /* Setting */,
 				A5D944B0226ED25600A076A1 /* Register */,
 				A5A03BBB226D52D800A0622C /* RestauransDetails */,
 				A5A03BB0226D406E00A0622C /* Common */,
@@ -384,6 +403,7 @@
 				A5A03BA4226D347F00A0622C /* RestaurantsViewController.swift in Sources */,
 				A5D944BF2272BE0D00A076A1 /* Loader.swift in Sources */,
 				A5A03B8B226CF8DE00A0622C /* AppDelegate.swift in Sources */,
+				A55E5089227912E90099CB41 /* SettingViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

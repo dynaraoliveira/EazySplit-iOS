@@ -27,8 +27,6 @@ class RegisterViewController: UIViewController {
     @IBOutlet weak var registerButton: UIButton!
     @IBOutlet weak var scrollView: UIScrollView!
     
-    var firebaseService: FirebaseService?
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         cleanErrors()
@@ -110,8 +108,7 @@ class RegisterViewController: UIViewController {
     private func saveFirebase(_ user: User) {
         Loader.shared.showOverlay(view: self.view)
         
-        firebaseService = FirebaseService()
-        firebaseService?.saveFirebase(user, photoData: registerImageView.image!.pngData(), completion: { (result) in
+        FirebaseService.shared.saveFirebase(user, photoData: registerImageView.image!.pngData(), completion: { (result) in
             switch result {
             case .success:
                 Loader.shared.hideOverlayView()
@@ -119,7 +116,7 @@ class RegisterViewController: UIViewController {
                 let storyBoard = UIStoryboard(name: "Main", bundle: nil)
                 guard let vc = storyBoard
                     .instantiateViewController(withIdentifier:"HomeTabBar") as? UITabBarController else { return }
-                self.navigationController?.pushViewController(vc, animated: true)
+                self.present(vc, animated: true, completion: nil)
                 
                 break
                 

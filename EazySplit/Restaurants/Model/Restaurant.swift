@@ -9,18 +9,12 @@
 import Foundation
 
 struct Restaurant: Codable {
-    let id: Int
+    let id: String
     let name: String
-    let image: String
+    let urlImage: String
     let type: String
     let description: String
     let rating: Int
-}
-
-struct RestaurantList: Codable {
-    var data: [Restaurant]?
-    
-    enum CodingKeys: String, CodingKey {
-        case data
-    }
+    let address: String
+    let geolocation: String
 }

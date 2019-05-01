@@ -27,10 +27,15 @@ class RestaurantsViewController: UIViewController {
     }
     
     func loadRestaurants() {
-        let restaurant1 = Restaurant(id: 1, name: "MC Donalds", image: "", type: "Fast food", description: "Fast food", rating: 8)
-        let restaurant2 = Restaurant(id: 2, name: "Tolloco", image: "", type: "Comida mexicana", description: "Comida mexicana", rating: 9)
-        restaurants.append(restaurant1)
-        restaurants.append(restaurant2)
+        FirebaseService.shared.listRestaurants { (result) in
+            switch result {
+            case .success:
+                self.restaurants = FirebaseService.shared.restaurantList
+                self.restaurantsTableView.reloadData()
+            case .error(let error):
+                print(error)
+            }
+        }
     }
 }
 
