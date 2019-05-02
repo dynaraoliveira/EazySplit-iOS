@@ -19,8 +19,6 @@ class SettingViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        imageProfile.layer.cornerRadius = imageProfile.frame.height / 2.0
-        imageProfile.layer.masksToBounds = true
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -33,6 +31,9 @@ class SettingViewController: UIViewController {
         if let name = FirebaseService.shared.authUser?.displayName {
             nameProfile.text = name
         }
+        
+        imageProfile.layer.cornerRadius = imageProfile.frame.height / 2.0
+        imageProfile.layer.masksToBounds = true
     }
     
     @IBAction func editProfile(_ sender: Any) {
