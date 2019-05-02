@@ -26,7 +26,7 @@ public class Loader {
         self.activityIndicator = UIActivityIndicatorView()
         
         overlayView.frame = CGRect(x: 0, y: 0, width: 80, height: 80)
-        overlayView.backgroundColor = .clear
+        overlayView.backgroundColor = .white
         overlayView.clipsToBounds = true
         overlayView.layer.cornerRadius = 10
         overlayView.layer.zPosition = 1

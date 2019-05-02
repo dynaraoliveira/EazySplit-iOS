@@ -20,18 +20,18 @@ class LoginViewController: UIViewController {
     var firebaseService: FirebaseService?
     
     override func viewDidLoad() {
-        userTextField.text = "teste@eazysplit.com"
-        passwordTextField.text = "123456"
         super.viewDidLoad()
         setButtons()
-        if FirebaseService.shared.authUser != nil {
-            goToHomeTabBar()
-        }
+        userTextField.text = "teste@eazysplit.com"
+        passwordTextField.text = "123456"
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.navigationBar.isHidden = true
+        if FirebaseService.shared.authUser != nil {
+            goToHomeTabBar()
+        }
     }
     
     private func setButtons() {

@@ -24,6 +24,7 @@ class RestaurantsViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         loadNavigationBar()
+        tabBarController?.tabBar.isHidden = false
     }
     
     func loadRestaurants() {
@@ -62,7 +63,12 @@ extension RestaurantsViewController: UITableViewDataSource, UITableViewDelegate 
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let restaurant = restaurants[indexPath.row]
-        
+        let storyBoard = UIStoryboard(name: "Main", bundle: nil)
+        guard let vc = storyBoard
+            .instantiateViewController(withIdentifier:"RestaurantDetailsViewController") as? RestaurantDetailsViewController else { return }
+        vc.restaurant = restaurant
+        tabBarController?.tabBar.isHidden = true
+        navigationController?.pushViewController(vc, animated: true)
     }
     
 }

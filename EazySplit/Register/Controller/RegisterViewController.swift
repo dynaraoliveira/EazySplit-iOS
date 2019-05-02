@@ -29,9 +29,14 @@ class RegisterViewController: UIViewController {
     
     private var update: Bool = false
     
+    let dateFormatter: DateFormatter = {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "dd/MM/yyyy"
+        return dateFormatter
+    }()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         if FirebaseService.shared.authUser != nil {
             FirebaseService.shared.getUser { (result) in
                 switch result {
@@ -45,6 +50,8 @@ class RegisterViewController: UIViewController {
                     break
                 }
             }
+        } else {
+            registerImageView.image = UIImage(named: "foto")
         }
         
         cleanErrors()
@@ -71,7 +78,6 @@ class RegisterViewController: UIViewController {
     private func setRegisterImageView() {
         registerImageView.layer.cornerRadius = registerImageView.frame.height / 2.0
         registerImageView.layer.masksToBounds = true
-        registerImageView.image = UIImage(named: "foto")
     }
     
     private func setRegisterButton() {
@@ -102,8 +108,7 @@ class RegisterViewController: UIViewController {
                 password = try passwordTextField.validatedText(validationType: ValidatorType.password(label: passwordErrorLabel, compare: nil))
                 let _ = try passwordConfirmTextField.validatedText(validationType: ValidatorType.password(label: passwordConfirmErrorLabel, compare: password))
             }
-            let dateFormatter = DateFormatter()
-            dateFormatter.dateFormat = "dd/MM/yyyy"
+            
             guard let birthDate = dateFormatter.date(from: birthDateString) else { return }
             
             let user = User(name: name, email: email, phoneNumber: phoneNumber, birthDate: birthDate, password: password, photoURL: "")
@@ -123,12 +128,7 @@ class RegisterViewController: UIViewController {
             switch result {
             case .success:
                 Loader.shared.hideOverlayView()
-                
-                let storyBoard = UIStoryboard(name: "Main", bundle: nil)
-                guard let vc = storyBoard
-                    .instantiateViewController(withIdentifier:"HomeTabBar") as? UITabBarController else { return }
-                self.present(vc, animated: true, completion: nil)
-                
+                self.navigationController?.popViewController(animated: true)
                 break
                 
             case .error(let err):
@@ -140,9 +140,6 @@ class RegisterViewController: UIViewController {
     }
     
     private func loadUserData(_ user: User) {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "dd/MM/yyyy"
-        
         nameTextField.text = user.name
         emailTextField.text = user.email
         phoneTextField.text = user.phoneNumber
@@ -151,6 +148,9 @@ class RegisterViewController: UIViewController {
         passwordConfirmTextField.isHidden = true
         passwordErrorLabel.isHidden = true
         passwordConfirmErrorLabel.isHidden = true
+        if !user.photoURL.isEmpty {
+            registerImageView.loadImage(withURL: user.photoURL)
+        }
     }
     
     func cleanErrors() {

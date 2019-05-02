@@ -50,5 +50,10 @@
     <string>This app will use camera</string>
     <key>NSPhotoLibraryUsageDescription</key>
     <string>You can select photo</string>
+    <key>LSApplicationQueriesSchemes</key>
+    <array>
+        <string>googlechromes</string>
+        <string>comgooglemaps</string>
+    </array>
 </dict>
 </plist>

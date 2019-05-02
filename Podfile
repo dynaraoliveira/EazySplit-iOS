@@ -7,9 +7,13 @@ target 'EazySplit' do
 
   # Pods for EazySplit
 
+  # Firebase
   pod 'Firebase/Core'
   pod 'Firebase/Auth'
   pod 'Firebase/Storage'
   pod 'Firebase/Firestore'
   
+  # Google
+  pod 'GoogleMaps'
+  pod 'GooglePlaces'
 end

@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		066A8690B74486AD75EB135C /* Pods_EazySplit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F9155AAFA1653BF9DA0189CD /* Pods_EazySplit.framework */; };
 		A55E5089227912E90099CB41 /* SettingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A55E5088227912E90099CB41 /* SettingViewController.swift */; };
+		A55E508E227A83610099CB41 /* RestaurantDetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A55E508D227A83610099CB41 /* RestaurantDetailsViewController.swift */; };
+		A55E5092227A940D0099CB41 /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A55E5091227A940D0099CB41 /* MapViewController.swift */; };
 		A5A03B8B226CF8DE00A0622C /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5A03B8A226CF8DE00A0622C /* AppDelegate.swift */; };
 		A5A03B8D226CF8DE00A0622C /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5A03B8C226CF8DE00A0622C /* LoginViewController.swift */; };
 		A5A03B90226CF8DE00A0622C /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A5A03B8E226CF8DE00A0622C /* Main.storyboard */; };
@@ -30,6 +32,8 @@
 		32F44C76815487553649CCEC /* Pods-EazySplit.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-EazySplit.debug.xcconfig"; path = "Target Support Files/Pods-EazySplit/Pods-EazySplit.debug.xcconfig"; sourceTree = "<group>"; };
 		6091642A7524DF291746D055 /* Pods-EazySplit.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-EazySplit.release.xcconfig"; path = "Target Support Files/Pods-EazySplit/Pods-EazySplit.release.xcconfig"; sourceTree = "<group>"; };
 		A55E5088227912E90099CB41 /* SettingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingViewController.swift; sourceTree = "<group>"; };
+		A55E508D227A83610099CB41 /* RestaurantDetailsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RestaurantDetailsViewController.swift; sourceTree = "<group>"; };
+		A55E5091227A940D0099CB41 /* MapViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
 		A5A03B87226CF8DE00A0622C /* EazySplit.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = EazySplit.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A5A03B8A226CF8DE00A0622C /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		A5A03B8C226CF8DE00A0622C /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
@@ -78,6 +82,30 @@
 			path = Controller;
 			sourceTree = "<group>";
 		};
+		A55E508C227A83390099CB41 /* Controller */ = {
+			isa = PBXGroup;
+			children = (
+				A55E508D227A83610099CB41 /* RestaurantDetailsViewController.swift */,
+			);
+			path = Controller;
+			sourceTree = "<group>";
+		};
+		A55E508F227A93E90099CB41 /* Map */ = {
+			isa = PBXGroup;
+			children = (
+				A55E5090227A93FB0099CB41 /* Controller */,
+			);
+			path = Map;
+			sourceTree = "<group>";
+		};
+		A55E5090227A93FB0099CB41 /* Controller */ = {
+			isa = PBXGroup;
+			children = (
+				A55E5091227A940D0099CB41 /* MapViewController.swift */,
+			);
+			path = Controller;
+			sourceTree = "<group>";
+		};
 		A5A03B7E226CF8DE00A0622C = {
 			isa = PBXGroup;
 			children = (
@@ -99,6 +127,7 @@
 		A5A03B89226CF8DE00A0622C /* EazySplit */ = {
 			isa = PBXGroup;
 			children = (
+				A55E508F227A93E90099CB41 /* Map */,
 				A55E5086227912BE0099CB41 /* Setting */,
 				A5D944B0226ED25600A076A1 /* Register */,
 				A5A03BBB226D52D800A0622C /* RestauransDetails */,
@@ -194,6 +223,7 @@
 		A5A03BBB226D52D800A0622C /* RestauransDetails */ = {
 			isa = PBXGroup;
 			children = (
+				A55E508C227A83390099CB41 /* Controller */,
 			);
 			path = RestauransDetails;
 			sourceTree = "<group>";
@@ -269,6 +299,7 @@
 				A5A03B84226CF8DE00A0622C /* Frameworks */,
 				A5A03B85226CF8DE00A0622C /* Resources */,
 				97CDC332FE00FD2A9366BED6 /* [CP] Embed Pods Frameworks */,
+				1AF782271FD010CEEC1C5136 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -327,6 +358,30 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		1AF782271FD010CEEC1C5136 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-EazySplit/Pods-EazySplit-resources.sh",
+				"${PODS_ROOT}/GoogleMaps/Maps/Frameworks/GoogleMaps.framework/Resources/GoogleMaps.bundle",
+				"${PODS_ROOT}/GooglePlaces/Frameworks/GooglePlaces.framework/Resources/GooglePlaces.bundle",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/GoogleMaps.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/GooglePlaces.bundle",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-EazySplit/Pods-EazySplit-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
 		97CDC332FE00FD2A9366BED6 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -397,6 +452,7 @@
 				A5A03BAC226D381E00A0622C /* RestaurantTableViewCell.swift in Sources */,
 				A5D944B3226ED28C00A076A1 /* RegisterViewController.swift in Sources */,
 				A5D944B6226ED7FD00A076A1 /* Validator.swift in Sources */,
+				A55E508E227A83610099CB41 /* RestaurantDetailsViewController.swift in Sources */,
 				A5A03B8D226CF8DE00A0622C /* LoginViewController.swift in Sources */,
 				A5D944BA2271656400A076A1 /* User.swift in Sources */,
 				A5A03BB4226D40A100A0622C /* Extension.swift in Sources */,
@@ -404,6 +460,7 @@
 				A5D944BF2272BE0D00A076A1 /* Loader.swift in Sources */,
 				A5A03B8B226CF8DE00A0622C /* AppDelegate.swift in Sources */,
 				A55E5089227912E90099CB41 /* SettingViewController.swift in Sources */,
+				A55E5092227A940D0099CB41 /* MapViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

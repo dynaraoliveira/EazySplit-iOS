@@ -26,6 +26,7 @@ class FirebaseService {
     let authFirebase: Auth
     
     let collectionRestaurants = "restaurants"
+    
     var firestoreListener: ListenerRegistration!
     var firestore: Firestore = {
         let settings = FirestoreSettings()
@@ -43,28 +44,38 @@ class FirebaseService {
         authFirebase.signIn(withEmail: email, password: password) { (authResult, error) in
             if let error = error {
                 completion(.error(error))
+                return
             }
             
-            if let authUser = authResult?.user {
-                self.authUser = authUser
-                completion(.success)
-            }
+            guard let authUser = authResult?.user else { return }
+            self.authUser = authUser
+            
+            completion(.success)
         }
     }
     
     func saveFirebase(_ user: User, photoData: Data? = nil, completion: @escaping((Result) -> Void)) {
         self.user = user
         
-        authFirebase.createUser(withEmail: user.email, password: user.password) { (authResult, error) in
-            
-            if let error = error {
-                completion(.error(error))
-            }
-            
-            if let authUser = authResult?.user {
-                self.authUser = authUser
-                self.savePhotoFireStorage(photoData)
+        if authUser != nil {
+            self.savePhotoFireStorage(photoData, {
                 completion(.success)
+            })
+            
+        } else {
+            authFirebase.createUser(withEmail: user.email, password: user.password) { (authResult, error) in
+                if let error = error {
+                    completion(.error(error))
+                    return
+                }
+                
+                guard let authUser = authResult?.user else { return }
+                self.authUser = authUser
+                
+                self.savePhotoFireStorage(photoData, {
+                    completion(.success)
+                })
+                
             }
         }
     }
@@ -79,9 +90,7 @@ class FirebaseService {
                 }
                 
                 guard let snapshot = snapshot else { return }
-                
-                print("alterações", snapshot.documentChanges.count)
-                
+            
                 if snapshot.metadata.isFromCache || snapshot.documentChanges.count > 0 {
                     self.restaurantList.removeAll()
                     
@@ -96,11 +105,13 @@ class FirebaseService {
                             let type = data["type"] as? String,
                             let urlImage = data["url_image"] as? String
                         {
-                            let restaurant = Restaurant(id: document.documentID, name: name, urlImage: urlImage, type: type, description: description, rating: rating, address: address, geolocation: "\(geolocation.latitude) \(geolocation.longitude)")
+                            let restaurant = Restaurant(id: document.documentID, name: name, urlImage: urlImage, type: type, description: description, rating: rating, address: address, latitude: geolocation.latitude, longitude: geolocation.longitude)
                             self.restaurantList.append(restaurant)
-                            completion(.success)
                         }
                     }
+                    
+                    completion(.success)
+                    return
                 }
         }
     }
@@ -109,13 +120,12 @@ class FirebaseService {
         self.user = nil
         
         let uid = authUser?.uid ?? ""
-        
         let name = authUser?.displayName ?? ""
         let email = authUser?.email ?? ""
         let photoURL = authUser?.photoURL?.absoluteString ?? ""
         
         let db = Firestore.firestore()
-        let ref: DocumentReference = db.collection("users").document(uid)
+        let ref = db.collection("users").document(uid)
         
         ref.getDocument { (document, error) in
             if let error = error {
@@ -123,83 +133,74 @@ class FirebaseService {
                 return
             }
             
-            let data = document?.data()
-            
-            if let phoneNumber = data?["phoneNumber"] as? String,
-                let birthDate = data?["birthDate"] as? Date {
-                self.user = User(name: name, email: email, phoneNumber: phoneNumber, birthDate: birthDate, password: "", photoURL: photoURL)
+            guard let data = document?.data() else {
+                self.user = User(name: name, email: email, phoneNumber: "", birthDate: Date(), password: "", photoURL: photoURL)
                 completion(.success)
+                return
             }
-        }
-        
-        if user == nil {
-            self.user = User(name: name, email: email, phoneNumber: "", birthDate: Date(), password: "", photoURL: photoURL)
-            completion(.success)
+            
+            if let phoneNumber = data["phoneNumber"] as? String,
+                let birthDate = data["birthDate"] as? Timestamp {
+                self.user = User(name: name, email: email, phoneNumber: phoneNumber, birthDate: birthDate.dateValue(), password: "", photoURL: photoURL)
+                completion(.success)
+                return
+            }
         }
     }
     
-    private func savePhotoFireStorage(_ photoData: Data?) {
+    private func savePhotoFireStorage(_ photoData: Data?, _ completion: @escaping(() -> Void)) {
         if let photoData = photoData {
             let imageName = authUser?.uid.description ?? ""
             let storageRef = Storage.storage().reference().child("profile_images").child("\(imageName).png")
             
-            storageRef.putData(photoData, metadata: nil, completion: { (_, error) in
-                
-                if let error = error {
-                    print(error)
-                    return
-                }
-                
-                storageRef.downloadURL(completion: { (url, err) in
-                    if let err = err {
-                        print(err)
-                        return
-                    }
+            storageRef.delete { (_) in
+            
+                storageRef.putData(photoData, metadata: nil, completion: { (_, error) in
+                    if let _ = error { return }
                     
-                    guard let url = url else { return }
-                    self.user?.photoURL = url.absoluteString
-                    
-                    self.performUserChange()
+                    storageRef.downloadURL(completion: { (url, error) in
+                        if let _ = error { return }
+                        guard let url = url else { return }
+                        self.user?.photoURL = url.absoluteString
+                        
+                        self.performUserChange({
+                            completion()
+                        })
+                    })
                 })
-                
-            })
+            }
         } else {
-            self.performUserChange()
+            self.performUserChange({
+                completion()
+            })
         }
-        
-        
     }
     
-    private func performUserChange() {
+    private func performUserChange(_ completion: @escaping(() -> Void)) {
         let changeResquest = authUser?.createProfileChangeRequest()
         changeResquest?.displayName = user?.name
         changeResquest?.photoURL = URL(string: user?.photoURL ?? "")
-        changeResquest?.commitChanges { (error) in
-            if error != nil {
-                print(error!)
-            }
-            self.performUserChangeOthersData()
+        changeResquest?.commitChanges { (_) in
+            self.performUserChangeOthersData({
+                completion()
+            })
         }
     }
     
-    private func performUserChangeOthersData() {
+    private func performUserChangeOthersData(_ completion: @escaping(() -> Void)) {
         let db = Firestore.firestore()
         let uid = authUser?.uid ?? ""
         let ref: DocumentReference = db.collection("users").document(uid)
         
         let docData: [String: Any] = [
-            "birthday": user?.birthDate ?? "",
-            "phone": user?.phoneNumber ?? ""
+            "birthDate": user?.birthDate ?? "",
+            "phoneNumber": user?.phoneNumber ?? ""
         ]
         
-        ref.setData(docData) { err in
-            if let err = err {
-                print("Error writing document: \(err)")
-            } else {
-                print("Document successfully written!")
+        ref.delete { (_) in
+            ref.setData(docData) { _ in
+                completion()
             }
         }
-        
     }
-    
 }

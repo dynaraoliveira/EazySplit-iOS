@@ -73,4 +73,12 @@ extension String {
         
         return pureNumber
     }
+    
+    func replicate(withNumber number: Int) -> String {
+        var replicateString = ""
+        for i in 0..<number {
+            replicateString += self
+        }
+        return replicateString
+    }
 }
