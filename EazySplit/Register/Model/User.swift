@@ -8,11 +8,23 @@
 
 import Foundation
 
-struct User {
+struct User: Codable {
     var name: String
     var email: String
     var phoneNumber: String
     var birthDate: Date
     var password: String
     var photoURL: String
+    var cards: [Card]?
+}
+
+struct Card: Codable {
+    var id: String
+    var number: String
+    var name: String
+    var flag: String
+    var codeValidate: Int
+    var monthValidate: Int
+    var yearValidate: Int
+    var document: String
 }

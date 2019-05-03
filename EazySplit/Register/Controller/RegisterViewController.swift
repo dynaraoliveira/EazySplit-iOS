@@ -37,11 +37,14 @@ class RegisterViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        if FirebaseService.shared.authUser != nil {
-            FirebaseService.shared.getUser { (result) in
+        
+        Loader.shared.showOverlay(view: self.view)
+        if Auth.auth().currentUser != nil {
+            FirebaseService.shared.getUser { (result, user) in
+                Loader.shared.hideOverlayView()
                 switch result {
                 case .success:
-                    if let user = FirebaseService.shared.user {
+                    if let user = user {
                         self.loadUserData(user)
                         self.update = true
                     }
@@ -52,6 +55,7 @@ class RegisterViewController: UIViewController {
             }
         } else {
             registerImageView.image = UIImage(named: "foto")
+            Loader.shared.hideOverlayView()
         }
         
         cleanErrors()
@@ -111,9 +115,9 @@ class RegisterViewController: UIViewController {
             
             guard let birthDate = dateFormatter.date(from: birthDateString) else { return }
             
-            let user = User(name: name, email: email, phoneNumber: phoneNumber, birthDate: birthDate, password: password, photoURL: "")
+            let user = User(name: name, email: email, phoneNumber: phoneNumber, birthDate: birthDate, password: password, photoURL: "", cards: nil)
             
-            saveFirebase(user)
+            saveUser(user)
             
         } catch(let error) {
             let errorLabel = (error as! ValidationError).label
@@ -121,10 +125,10 @@ class RegisterViewController: UIViewController {
         }
     }
     
-    private func saveFirebase(_ user: User) {
+    private func saveUser(_ user: User) {
         Loader.shared.showOverlay(view: self.view)
         
-        FirebaseService.shared.saveFirebase(user, photoData: registerImageView.image!.pngData(), completion: { (result) in
+        FirebaseService.shared.saveUser(user, photoData: registerImageView.image!.pngData(), completion: { (result) in
             switch result {
             case .success:
                 Loader.shared.hideOverlayView()
@@ -212,6 +216,9 @@ extension RegisterViewController: UITextFieldDelegate {
         
         guard let text = textField.text else { return false }
         
+        let char = string.cString(using: String.Encoding.utf8)
+        let isBackSpace = strcmp(char, "\\b")
+        
         switch textField.tag {
         case 3:
             if textField.text?.count ?? 0 < 15 {
@@ -219,9 +226,10 @@ extension RegisterViewController: UITextFieldDelegate {
             } else {
                 textField.text = text.applyPatternOnNumbers(pattern: "+(##) #####-####", replacmentCharacter: "#")
             }
+            if textField.text?.count ?? 0 >= 16 && isBackSpace != -92 { return false }
         case 4:
-            if textField.text?.count ?? 0 >= 10 { return false }
             textField.text = text.applyPatternOnNumbers(pattern: "##/##/####", replacmentCharacter: "#")
+            if textField.text?.count ?? 0 >= 10 && isBackSpace != -92 { return false }
             
         default:
             return true
@@ -279,7 +287,7 @@ extension RegisterViewController: UIImagePickerControllerDelegate, UINavigationC
         }
         
         if let selectedImage = selectedImageFromPicker {
-            registerImageView.image = selectedImage
+            registerImageView.image = selectedImage.resizeWith(percentage: 0.2)
         }
         
         dismiss(animated: true, completion: nil)

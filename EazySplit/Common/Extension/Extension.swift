@@ -76,9 +76,40 @@ extension String {
     
     func replicate(withNumber number: Int) -> String {
         var replicateString = ""
-        for i in 0..<number {
+        for _ in 0..<number {
             replicateString += self
         }
         return replicateString
+    }
+}
+
+extension UIViewController {
+    func goToViewController(withIdentifier: String) {
+        if let vc = storyboard?.instantiateViewController(withIdentifier: withIdentifier) {
+            tabBarController?.tabBar.isHidden = true
+            pushViewController(vc)
+        }
+    }
+    
+    func pushViewController(_ vc: UIViewController) {
+        navigationController?.pushViewController(vc, animated: true)
+    }
+    
+    func presentViewController(_ vc: UIViewController) {
+        self.present(vc, animated: true, completion: nil)
+    }
+}
+
+extension UIImage {
+    func resizeWith(percentage: CGFloat) -> UIImage? {
+        let imageView = UIImageView(frame: CGRect(origin: .zero, size: CGSize(width: size.width * percentage, height: size.height * percentage)))
+        imageView.contentMode = .scaleAspectFit
+        imageView.image = self
+        UIGraphicsBeginImageContextWithOptions(imageView.bounds.size, false, scale)
+        guard let context = UIGraphicsGetCurrentContext() else { return nil }
+        imageView.layer.render(in: context)
+        guard let image = UIGraphicsGetImageFromCurrentImageContext() else { return nil }
+        UIGraphicsEndImageContext()
+        return image
     }
 }

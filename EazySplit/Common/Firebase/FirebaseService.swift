@@ -18,17 +18,20 @@ enum Result {
 
 class FirebaseService {
     
-    static let shared = FirebaseService()
+    class var shared: FirebaseService {
+        struct Static {
+            static let instance: FirebaseService = FirebaseService()
+        }
+        return Static.instance
+    }
     
-    var user: User?
-    var restaurantList: [Restaurant] = []
-    var authUser: FirebaseAuth.User?
-    let authFirebase: Auth
+    private let authFirebase: Auth
+    private let collectionUsers = "users"
+    private let collectionRestaurants = "restaurants"
+    private let collectionCards = "cards"
     
-    let collectionRestaurants = "restaurants"
-    
-    var firestoreListener: ListenerRegistration!
-    var firestore: Firestore = {
+    private var firestoreListener: ListenerRegistration!
+    private var firestore: Firestore = {
         let settings = FirestoreSettings()
         settings.isPersistenceEnabled = true
         var firestore = Firestore.firestore()
@@ -40,28 +43,11 @@ class FirebaseService {
         authFirebase = Auth.auth()
     }
     
-    func loginFirebase(email: String, password: String, completion: @escaping((Result) -> Void)) {
-        authFirebase.signIn(withEmail: email, password: password) { (authResult, error) in
-            if let error = error {
-                completion(.error(error))
-                return
-            }
-            
-            guard let authUser = authResult?.user else { return }
-            self.authUser = authUser
-            
-            completion(.success)
-        }
-    }
-    
-    func saveFirebase(_ user: User, photoData: Data? = nil, completion: @escaping((Result) -> Void)) {
-        self.user = user
-        
-        if authUser != nil {
-            self.savePhotoFireStorage(photoData, {
+    func saveUser(_ user: User, photoData: Data? = nil, completion: @escaping((Result) -> Void)) {
+        if authFirebase.currentUser != nil {
+            self.savePhotoFireStorage(user, photoData, {
                 completion(.success)
             })
-            
         } else {
             authFirebase.createUser(withEmail: user.email, password: user.password) { (authResult, error) in
                 if let error = error {
@@ -69,10 +55,7 @@ class FirebaseService {
                     return
                 }
                 
-                guard let authUser = authResult?.user else { return }
-                self.authUser = authUser
-                
-                self.savePhotoFireStorage(photoData, {
+                self.savePhotoFireStorage(user, photoData, {
                     completion(.success)
                 })
                 
@@ -80,19 +63,48 @@ class FirebaseService {
         }
     }
     
-    func listRestaurants(completion: @escaping((Result) -> Void)) {
+    func saveCard(_ card: Card, completion: @escaping(() -> Void)) {
+        let uid = authFirebase.currentUser?.uid ?? ""
+        
+        let docData: [String: Any] = [
+            "number": card.number,
+            "name": card.name,
+            "codeValidate": card.codeValidate,
+            "monthValidate": card.monthValidate,
+            "yearValidate": card.yearValidate,
+            "document": card.document,
+            "flag": card.flag
+        ]
+        
+        if card.id == "" {
+            firestore.collection(collectionUsers).document(uid).collection(collectionCards).addDocument(data: docData)
+        } else {
+            firestore.collection(collectionUsers).document(uid).collection(collectionCards).document(card.id).updateData(docData)
+        }
+        
+        completion()
+    }
+    
+    func listRestaurants(completion: @escaping((Result, [Restaurant]?) -> Void)) {
+        var restaurantList: [Restaurant] = []
+        
         firestoreListener = firestore.collection(collectionRestaurants)
             .order(by: "name", descending: false)
             .addSnapshotListener(includeMetadataChanges: true){ (snapshot, error) in
+                if snapshot?.count == 0 {
+                    completion(.success, nil)
+                    return
+                }
+                
                 if let error = error {
-                    completion(.error(error))
+                    completion(.error(error), nil)
                     return
                 }
                 
                 guard let snapshot = snapshot else { return }
-            
+                
                 if snapshot.metadata.isFromCache || snapshot.documentChanges.count > 0 {
-                    self.restaurantList.removeAll()
+                    restaurantList.removeAll()
                     
                     for document in snapshot.documents {
                         let data = document.data()
@@ -106,101 +118,151 @@ class FirebaseService {
                             let urlImage = data["url_image"] as? String
                         {
                             let restaurant = Restaurant(id: document.documentID, name: name, urlImage: urlImage, type: type, description: description, rating: rating, address: address, latitude: geolocation.latitude, longitude: geolocation.longitude)
-                            self.restaurantList.append(restaurant)
+                            restaurantList.append(restaurant)
                         }
                     }
                     
-                    completion(.success)
+                    completion(.success, restaurantList)
                     return
                 }
         }
     }
     
-    func getUser(completion: @escaping((Result) -> Void)) {
-        self.user = nil
+    func listCards(completion: @escaping((Result, [Card]?) -> Void)) {
+        let uid = authFirebase.currentUser?.uid ?? ""
+        var cards: [Card] = []
         
-        let uid = authUser?.uid ?? ""
-        let name = authUser?.displayName ?? ""
-        let email = authUser?.email ?? ""
-        let photoURL = authUser?.photoURL?.absoluteString ?? ""
+        firestoreListener = firestore.collection(collectionUsers).document(uid).collection(collectionCards)
+            .addSnapshotListener(includeMetadataChanges: true) { (snapshot, error) in
+                if snapshot?.count == 0 {
+                    completion(.success, nil)
+                    return
+                }
+                
+                if let error = error {
+                    completion(.error(error), nil)
+                    return
+                }
+                
+                guard let snapshot = snapshot else { return }
+                
+                if snapshot.metadata.isFromCache || snapshot.documentChanges.count > 0 {
+                    cards.removeAll()
+                    
+                    for document in snapshot.documents {
+                        let data = document.data()
+                        let id = document.documentID
+                        if let number = data["number"] as? String,
+                            let name = data["name"] as? String,
+                            let codeValidate = data["codeValidate"] as? Int,
+                            let monthValidate = data["monthValidate"] as? Int,
+                            let yearValidate = data["yearValidate"] as? Int,
+                            let document = data["document"] as? String,
+                            let flag = data["flag"] as? String
+                        {
+                            let card = Card(id: id, number: number, name: name, flag: flag, codeValidate: codeValidate, monthValidate: monthValidate, yearValidate: yearValidate, document: document)
+                            cards.append(card)
+                        }
+                    }
+                    
+                    completion(.success, cards)
+                    return
+                }
+        }
         
-        let db = Firestore.firestore()
-        let ref = db.collection("users").document(uid)
         
-        ref.getDocument { (document, error) in
+    }
+    
+    func deleteCard(id: String, completion: @escaping((Result) -> Void)) {
+        let uid = authFirebase.currentUser?.uid ?? ""
+        
+        firestore.collection(collectionUsers).document(uid).collection(collectionCards).document(id).delete() { error in
             if let error = error {
                 completion(.error(error))
+            } else {
+                completion(.success)
+            }
+        }
+        
+    }
+    
+    func getUser(completion: @escaping((Result, User?) -> Void)) {
+        let uid = authFirebase.currentUser?.uid ?? ""
+        let name = authFirebase.currentUser?.displayName ?? ""
+        let email = authFirebase.currentUser?.email ?? ""
+        let photoURL = authFirebase.currentUser?.photoURL?.absoluteString ?? ""
+        
+        firestore.collection(collectionUsers).document(uid).getDocument { (document, error) in
+            if let error = error {
+                completion(.error(error), nil)
                 return
             }
             
             guard let data = document?.data() else {
-                self.user = User(name: name, email: email, phoneNumber: "", birthDate: Date(), password: "", photoURL: photoURL)
-                completion(.success)
+                let user = User(name: name, email: email, phoneNumber: "", birthDate: Date(), password: "", photoURL: photoURL, cards: nil)
+                completion(.success, user)
                 return
             }
             
             if let phoneNumber = data["phoneNumber"] as? String,
                 let birthDate = data["birthDate"] as? Timestamp {
-                self.user = User(name: name, email: email, phoneNumber: phoneNumber, birthDate: birthDate.dateValue(), password: "", photoURL: photoURL)
-                completion(.success)
+                let user = User(name: name, email: email, phoneNumber: phoneNumber, birthDate: birthDate.dateValue(), password: "", photoURL: photoURL, cards: nil)
+                completion(.success, user)
                 return
             }
         }
     }
     
-    private func savePhotoFireStorage(_ photoData: Data?, _ completion: @escaping(() -> Void)) {
+    private func savePhotoFireStorage(_ user: User, _ photoData: Data?, _ completion: @escaping(() -> Void)) {
+        
         if let photoData = photoData {
-            let imageName = authUser?.uid.description ?? ""
+            let imageName = authFirebase.currentUser?.uid.description ?? ""
             let storageRef = Storage.storage().reference().child("profile_images").child("\(imageName).png")
             
+            var user = user
             storageRef.delete { (_) in
-            
                 storageRef.putData(photoData, metadata: nil, completion: { (_, error) in
                     if let _ = error { return }
                     
                     storageRef.downloadURL(completion: { (url, error) in
                         if let _ = error { return }
                         guard let url = url else { return }
-                        self.user?.photoURL = url.absoluteString
+                        user.photoURL = url.absoluteString
                         
-                        self.performUserChange({
+                        self.performUserChange(user, {
                             completion()
                         })
                     })
                 })
             }
         } else {
-            self.performUserChange({
+            self.performUserChange(user, {
                 completion()
             })
         }
     }
     
-    private func performUserChange(_ completion: @escaping(() -> Void)) {
-        let changeResquest = authUser?.createProfileChangeRequest()
-        changeResquest?.displayName = user?.name
-        changeResquest?.photoURL = URL(string: user?.photoURL ?? "")
+    private func performUserChange(_ user: User, _ completion: @escaping(() -> Void)) {
+        let changeResquest = authFirebase.currentUser?.createProfileChangeRequest()
+        changeResquest?.displayName = user.name
+        changeResquest?.photoURL = URL(string: user.photoURL)
         changeResquest?.commitChanges { (_) in
-            self.performUserChangeOthersData({
+            self.performUserChangeOthersData(user, {
                 completion()
             })
         }
     }
     
-    private func performUserChangeOthersData(_ completion: @escaping(() -> Void)) {
-        let db = Firestore.firestore()
-        let uid = authUser?.uid ?? ""
-        let ref: DocumentReference = db.collection("users").document(uid)
+    private func performUserChangeOthersData(_ user: User, _ completion: @escaping(() -> Void)) {
+        let uid = authFirebase.currentUser?.uid ?? ""
         
         let docData: [String: Any] = [
-            "birthDate": user?.birthDate ?? "",
-            "phoneNumber": user?.phoneNumber ?? ""
+            "birthDate": user.birthDate,
+            "phoneNumber": user.phoneNumber
         ]
         
-        ref.delete { (_) in
-            ref.setData(docData) { _ in
-                completion()
-            }
+        firestore.collection(collectionUsers).document(uid).setData(docData) { _ in
+            completion()
         }
     }
 }

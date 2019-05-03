@@ -22,14 +22,13 @@ class LoginViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setButtons()
-        userTextField.text = "teste@eazysplit.com"
-        passwordTextField.text = "123456"
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.navigationBar.isHidden = true
-        if FirebaseService.shared.authUser != nil {
+        
+        if Auth.auth().currentUser != nil {
             goToHomeTabBar()
         }
     }
@@ -43,22 +42,15 @@ class LoginViewController: UIViewController {
     @IBAction func loginClick(_ sender: Any) {
         Loader.shared.showOverlay(view: self.view)
         
-        FirebaseService.shared.loginFirebase(email: userTextField.text ?? "",
-                                             password: passwordTextField.text ?? "",
-                                             completion: { (result) in
-                                                Loader.shared.hideOverlayView()
-                                                switch result {
-                                                case .success:
-                                                    self.goToHomeTabBar()
-                                                    break
-                                                    
-                                                case .error(let err):
-                                                    self.alertInvalidLogin()
-                                                    print(err.localizedDescription)
-                                                    break
-                                                }
-        })
-        
+        Auth.auth().signIn(withEmail: userTextField.text ?? "", password: passwordTextField.text ?? "") { (result, error) in
+            Loader.shared.hideOverlayView()
+            if error != nil {
+                self.alertInvalidLogin()
+                return
+            } else {
+                self.goToHomeTabBar()
+            }
+        }
     }
     
     private func alertInvalidLogin() {
@@ -74,10 +66,6 @@ class LoginViewController: UIViewController {
             .instantiateViewController(withIdentifier:"HomeTabBar") as? UITabBarController else { return }
         
         presentViewController(vc)
-    }
-    
-    private func presentViewController(_ vc: UIViewController) {
-        self.present(vc, animated: true, completion: nil)
     }
     
 }

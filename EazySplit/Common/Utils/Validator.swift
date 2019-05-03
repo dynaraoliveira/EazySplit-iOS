@@ -1,5 +1,6 @@
 import Foundation
 import UIKit
+import CPF_CNPJ_Validator
 
 class ValidationError: Error {
     var message: String
@@ -21,6 +22,8 @@ enum ValidatorType {
     case requiredField(field: String, label: UILabel)
     case date(label: UILabel)
     case phone(label: UILabel)
+    case document(label: UILabel)
+    case validate(label: UILabel)
 }
 
 enum ValidatorFactory {
@@ -31,6 +34,8 @@ enum ValidatorFactory {
         case .requiredField(let fieldName, let label): return RequiredFieldValidator(fieldName, label)
         case .date(let label): return DateValidator(label)
         case .phone(let label): return PhoneValidator(label)
+        case .document(let label): return DocumentValidator(label)
+        case .validate(let label): return ValidateValidator(label)
         }
     }
 }
@@ -125,5 +130,41 @@ struct PhoneValidator: ValidatorConvertible {
         }
         
         return valuePhone
+    }
+}
+
+struct DocumentValidator: ValidatorConvertible {
+    private let errorLabel: UILabel
+    
+    init(_ errorLabel: UILabel) {
+        self.errorLabel = errorLabel
+    }
+    
+    func validated(_ value: String) throws -> String {
+        let valueDocument = value.removeCharsFromStringPhone
+        guard BooleanValidator().validate(cpf: valueDocument) else {
+            throw ValidationError("Invalid document", errorLabel)
+        }
+        
+        return valueDocument
+    }
+}
+
+struct ValidateValidator: ValidatorConvertible {
+    private let errorLabel: UILabel
+    
+    init(_ errorLabel: UILabel) {
+        self.errorLabel = errorLabel
+    }
+    
+    func validated(_ value: String) throws -> String {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "MM/yy"
+        
+        guard dateFormatter.date(from: value) != nil else {
+            throw ValidationError("Invalid validate", errorLabel)
+        }
+        
+        return value
     }
 }

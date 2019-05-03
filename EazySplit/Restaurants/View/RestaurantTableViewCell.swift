@@ -14,7 +14,8 @@ class RestaurantTableViewCell: UITableViewCell {
     @IBOutlet weak var restaurantImageView: UIImageView!
     @IBOutlet weak var typeFoodLabel: UILabel!
     @IBOutlet weak var nameRestaurantLabel: UILabel!
-    
+    @IBOutlet weak var ratingLabel: UILabel!
+
     override func awakeFromNib() {
         super.awakeFromNib()
 
@@ -30,14 +31,14 @@ class RestaurantTableViewCell: UITableViewCell {
 
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
-
-        // Configure the view for the selected state
     }
 
     func setupRestaurant(_ restaurant: Restaurant) {
         restaurantImageView.loadImage(withURL: restaurant.urlImage)
         typeFoodLabel.text = restaurant.type
         nameRestaurantLabel.text = restaurant.name
+        let rating = restaurant.rating / 2
+        ratingLabel.text = "Rating " + "⭐️".replicate(withNumber: rating)
     }
     
     override func prepareForReuse() {

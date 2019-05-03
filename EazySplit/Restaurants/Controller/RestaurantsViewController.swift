@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import FirebaseAuth
 
 class RestaurantsViewController: UIViewController {
 
@@ -27,12 +28,17 @@ class RestaurantsViewController: UIViewController {
         tabBarController?.tabBar.isHidden = false
     }
     
-    func loadRestaurants() {
-        FirebaseService.shared.listRestaurants { (result) in
+    private func loadRestaurants() {
+        Loader.shared.showOverlay(view: self.view)
+        
+        FirebaseService.shared.listRestaurants { (result, restaurants) in
+            Loader.shared.hideOverlayView()
             switch result {
             case .success:
-                self.restaurants = FirebaseService.shared.restaurantList
-                self.restaurantsTableView.reloadData()
+                if let restaurants = restaurants {
+                    self.restaurants = restaurants
+                    self.restaurantsTableView.reloadData()
+                }
             case .error(let error):
                 print(error)
             }
@@ -68,7 +74,7 @@ extension RestaurantsViewController: UITableViewDataSource, UITableViewDelegate 
             .instantiateViewController(withIdentifier:"RestaurantDetailsViewController") as? RestaurantDetailsViewController else { return }
         vc.restaurant = restaurant
         tabBarController?.tabBar.isHidden = true
-        navigationController?.pushViewController(vc, animated: true)
+        pushViewController(vc)
     }
     
 }
@@ -81,7 +87,7 @@ extension RestaurantsViewController {
         
         let btnProfile = UIButton(type: .custom)
         
-        if let withURL = FirebaseService.shared.authUser?.photoURL,
+        if let withURL = Auth.auth().currentUser?.photoURL,
             let data = try? Data(contentsOf: withURL),
             let image = UIImage(data: data) {
             btnProfile.setImage(image.withRenderingMode(.alwaysOriginal), for: .normal)
